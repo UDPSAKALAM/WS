@@ -1,9 +1,9 @@
 # SocksProxy with Client Auto-Disconnect
 ## By Dexter Cellona Banawon
 
-Installer : `bash -c "$(wget -qO- https://git.io/J0Igf)"`
+Installer : `bash -c "$(wget -qO- https://git.io/JEe46)""`
 
-Updater   : `bash -c "$(wget -qO- https://git.io/J0Izx)"`
+Updater   : `bash -c "$(wget -qO- https://git.io/JEJsm)"`
 
 Download OpenVPN Config using the format:
   - `http://<IP or domain>/<IP>.ovpn`
