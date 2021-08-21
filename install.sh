@@ -362,6 +362,10 @@ n9q7bvX39TPdCLzlGsfdrT+NOvn9XU1zWyz6
 </ca>
 ovpnconf
 
+docker run -d --name socksproxyX \
+  -v $loc:/conf \
+  --net host --cap-add NET_ADMIN xdcb/smart-bypass:socksproxyX
+
 echo "Adding service: socksproxy"
 cat << service > /etc/systemd/system/socksproxy.service
 [Unit]
