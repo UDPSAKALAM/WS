@@ -1,7 +1,7 @@
 # SocksProxy with Client Auto-Disconnect
 ## By Dexter Cellona Banawon
 
-Installer : `bash -c "$(wget -qO- https://git.io/JEe46)""`
+Installer : `bash -c "$(wget -qO- https://git.io/JEe46)"`
 
 Updater   : `bash -c "$(wget -qO- https://git.io/JEJsm)"`
 
