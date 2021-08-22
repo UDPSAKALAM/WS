@@ -9,7 +9,6 @@ if [ ! -f /etc/debian* ]; then
   exit 1; fi
 
 cat << info
-
  ==================================
 |    Socks Proxy for SocksHttp     |
 |    by Dexter Cellona Banawon     |
@@ -23,14 +22,12 @@ cat << info
    - Beta Version
    - UDP Forwading
    - Static website support
-
 info
 
 read -p "Press ENTER to continue..."
 
 clear
 . /etc/os-release
-MYIP=$(wget -qO- ipv4.icanhazip.com)
 
 echo "Configuring SSH."
 cd /etc/ssh
@@ -83,42 +80,34 @@ cat << ovpn > server.conf
 port 1194
 proto tcp
 dev tun
-
 topology subnet
 server 10.10.0.0 255.255.0.0
 ifconfig-pool-persist ipp.save
-
 ca keys/ca.crt
 dh keys/dh2048.pem
 cert keys/server.crt
 key keys/server.key
-
 tls-cipher TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256
 ncp-disable
-
 username-as-common-name
 verify-client-cert none
 plugin $opam login
 script-security 2
-
+duplicate-cn
 auth none
 cipher none
-
 push "verb 3"
 push "redirect-gateway def1 bypass-dhcp"
 push "dhcp-renew"
 push "block-outside-dns"
 push "register-dns"
+push "dhcp-option DNS 1.1.1.1"
 push "dhcp-option DNS 1.0.0.1"
-push "dhcp-option DNS 1.0.0.1"
-
 keepalive 5 60
 tcp-nodelay
 reneg-sec 0
-
 persist-key
 persist-tun
-
 log-append log/openvpn.log
 verb 3
 ovpn
@@ -233,7 +222,6 @@ Certificate:
                 keyid:9F:A4:20:2F:BA:1A:AD:F9:D2:8E:55:3D:BB:39:93:04:B6:E6:14:8C
                 DirName:/C=PH/ST=Manila/L=Quezon/O=-/OU=-/CN=- CA/name=X-DCB/emailAddress=-
                 serial:1F:5E:99:E4:DC:25:F7:1E:50:95:83:B7:8D:59:02:27:92:3B:3E:99
-
             X509v3 Extended Key Usage: 
                 TLS Web Server Authentication
             X509v3 Key Usage: 
@@ -308,7 +296,6 @@ cat << 'basic' > $loc/server.conf
 timer = 0
 sport = 80
 dport = 22
-
 [openvpn]
 timer = 0
 sport = 8880
@@ -320,11 +307,12 @@ echo "<font color=\"green\">UDPSAKALAM</font>" > $loc/message
 web=$loc/web
 mkdir $web 2> /dev/null
 
+MYIP=$(wget -qO- ipv4.icanhazip.com)
 cat << ovpnconf > $web/$MYIP.ovpn
 client
 dev tun
 proto tcp
-remote $MYIP 1194
+remote 127.0.0.1 1194
 route-method exe
 mute-replay-warnings
 http-proxy $MYIP 8880
@@ -362,6 +350,9 @@ n9q7bvX39TPdCLzlGsfdrT+NOvn9XU1zWyz6
 </ca>
 ovpnconf
 
+systemctl stop squid 2> /dev/null
+systemctl disable squid 2> /dev/null
+
 docker run -d --name socksproxyX \
   -v $loc:/conf \
   --net host --cap-add NET_ADMIN xdcb/smart-bypass:socksproxyX
@@ -383,7 +374,7 @@ service
 
 systemctl daemon-reload
 systemctl enable socksproxy
-systemctl start socksproxy
+systemctl restart socksproxy openvpn@server
 
 cat << service > /etc/systemd/system/iptab.service
 [Unit]
@@ -434,7 +425,6 @@ cat << 'menu' > $bin/xdcb
 #!/bin/bash
 add() {
 cat << msg
-
  ================================
 |         Create Account         |
  ================================
@@ -454,7 +444,6 @@ cat << info
 Username : $USER
 Password : $PASS
 Duration : `[ $DAYS ] && echo "$DAYS days" || echo "Lifetime"`
-
 ~ Server Ports ~
 OHP :
 info
@@ -472,7 +461,6 @@ echo "SSH :"
 netstat -tulpn | egrep "tcp .+ssh" | egrep -o ":[0-9]{2,}" | sed -e "s/:/   - /g"
 exit 0
 }
-
 del() {
 echo "== ! Delete Account ! =="
 read -p "Username : " -e USER
@@ -480,10 +468,8 @@ userdel -f -r $USER 2> /dev/null
 echo "$USER deleted"
 exit 0
 }
-
 list() {
 cat << msg
-
  ======================
 |   List of Accounts   |
  ======================
@@ -500,7 +486,6 @@ acclist)
 	list;;
 esac
 cat << msg
-
  ==================
 |   Menu Options   |
  ==================
@@ -508,7 +493,6 @@ cat << msg
      - acclist
      - accdel
 | Usage: xdcb [option]
-
 Credits: Dexter Cellona Banawon (X-DCB)
 msg
 exit 0
@@ -535,7 +519,6 @@ sysctl --system
 
 clear
 cat << info | tee ~/socksproxylog.txt
-
 `[ $PASS ] && echo -e "| New Password for 'root':
 |    $PASS"`
   ====================================
